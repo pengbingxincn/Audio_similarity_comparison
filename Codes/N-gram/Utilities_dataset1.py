@@ -2,16 +2,18 @@ from Classes import *
 import numpy as np
 import os
 
-data_path = '../../dataset/'
+data_path = r'D:\gitWork\Audio_similarity_comparison\build_dataset\npydataset\\'
+
+
 def extract_n_grams(n, music):
     gram_dic = {}
     music.pitch_difference()
     notes_list = music.notes_list[1:]
     idx = 0
-    while (idx <= len(notes_list)-n):
+    while (idx <= len(notes_list) - n):
         pitch_list = []
         for i in range(n):
-            pitch_list.append(notes_list[idx+i].pitch)
+            pitch_list.append(notes_list[idx + i].pitch)
         idx += 1
 
         pitch_list = tuple(pitch_list)
@@ -24,6 +26,7 @@ def extract_n_grams(n, music):
         music.TF[key] = gram_dic[key] / idx
     music.gram_dic = gram_dic
     return gram_dic
+
 
 def Ukkonen(n, music1, music2):
     n1 = 0
@@ -44,6 +47,7 @@ def Ukkonen(n, music1, music2):
         sum += abs(gram_dic1[key] - gram_dic2[key])
     return 1 - sum / (n1 + n2)
 
+
 def SumCommon(n, music1, music2):
     n1 = 0
     n2 = 0
@@ -57,6 +61,7 @@ def SumCommon(n, music1, music2):
     for key in gram_dic2.keys():
         n2 += gram_dic2[key]
     return sum / (n1 + n2)
+
 
 # def TF_IDF_correlation(n, music1, music2):
 
@@ -73,7 +78,7 @@ def Ukkonen_Wrapper(n):
     avg_index = 0
     for i in range(0, file_num):
         res = {}
-        for j in range(0, file_num): # similarity of music i and music j
+        for j in range(0, file_num):  # similarity of music i and music j
             if (i == j) or (files[i][6:] == files[j][6:]):
                 continue
             res[files[j]] = Ukkonen(n, musics[i], musics[j])
@@ -86,7 +91,7 @@ def Ukkonen_Wrapper(n):
         for key, value in res:
             print("{}:\t{}".format(key, value))
             index += 1
-            if key[:6] == files[i][:6]: # ground truth
+            if key[:6] == files[i][:6]:  # ground truth
                 print(index)
                 avg_index += index
                 if (index == 1):
@@ -96,7 +101,7 @@ def Ukkonen_Wrapper(n):
 
 
 def SumCommon_Wrapper(n):
-# accuracy:0.34285714285714286	average index:5.4
+    # accuracy:0.34285714285714286	average index:5.4
     files = os.listdir(data_path)
     file_num = len(files)
     musics = []
@@ -108,7 +113,7 @@ def SumCommon_Wrapper(n):
     avg_index = 0
     for i in range(0, file_num):
         res = {}
-        for j in range(0, file_num): # similarity of music i and music j
+        for j in range(0, file_num):  # similarity of music i and music j
             if (i == j) or (files[i][6:] == files[j][6:]):
                 continue
             res[files[j]] = SumCommon(n, musics[i], musics[j])
@@ -121,7 +126,7 @@ def SumCommon_Wrapper(n):
         for key, value in res:
             print("{}:\t{}".format(key, value))
             index += 1
-            if key[:6] == files[i][:6]: # ground truth
+            if key[:6] == files[i][:6]:  # ground truth
                 print(index)
                 avg_index += index
                 if (index == 1):
@@ -129,12 +134,13 @@ def SumCommon_Wrapper(n):
 
     print("accuracy:{}\taverage index:{}".format(accuracy / file_num, avg_index / file_num))
 
+
 def TF_IDF_correlation(n):
-# accuracy:0.2857142857142857	average index:6.8
+    # accuracy:0.2857142857142857	average index:6.8
     files = os.listdir(data_path)
     file_num = len(files)
     musics = []
-    gram_num_dic = {} # gram_num_dic[key] denotes the number of songs contain key
+    gram_num_dic = {}  # gram_num_dic[key] denotes the number of songs contain key
 
     for file in files:
         music = Music(data_path + file)
@@ -162,14 +168,14 @@ def TF_IDF_correlation(n):
     avg_index = 0
     for i in range(0, file_num):
         res = {}
-        for j in range(0, file_num): # similarity of music i and music j
+        for j in range(0, file_num):  # similarity of music i and music j
             if (i == j) or (files[i][6:] == files[j][6:]):
                 continue
             up = 0.0
             down1 = 0.0
             down2 = 0.0
             for key in musics[i].TFIDF.keys():
-                if musics[i].TF[key] != 0 or musics[j].TF[key] != 0 :
+                if musics[i].TF[key] != 0 or musics[j].TF[key] != 0:
                     up += musics[i].TFIDF[key] * musics[j].TFIDF[key]
                     down1 += musics[i].TFIDF[key] ** 2
                     down2 += musics[j].TFIDF[key] ** 2
@@ -183,7 +189,7 @@ def TF_IDF_correlation(n):
         for key, value in res:
             print("{}:\t{}".format(key, value))
             index += 1
-            if key[:6] == files[i][:6]: # ground truth
+            if key[:6] == files[i][:6]:  # ground truth
                 print(index)
                 avg_index += index
                 if (index == 1):
@@ -191,12 +197,13 @@ def TF_IDF_correlation(n):
 
     print("accuracy:{}\taverage index:{}".format(accuracy / file_num, avg_index / file_num))
 
+
 def TF_IDF_common(n):
-# accuracy:0.08571428571428572	average index:17.257142857142856
+    # accuracy:0.08571428571428572	average index:17.257142857142856
     files = os.listdir(data_path)
     file_num = len(files)
     musics = []
-    gram_num_dic = {} # gram_num_dic[key] denotes the number of songs contain key
+    gram_num_dic = {}  # gram_num_dic[key] denotes the number of songs contain key
 
     for file in files:
         music = Music(data_path + file)
@@ -224,13 +231,13 @@ def TF_IDF_common(n):
     avg_index = 0
     for i in range(0, file_num):
         res = {}
-        for j in range(0, file_num): # similarity of music i and music j
+        for j in range(0, file_num):  # similarity of music i and music j
             if (i == j) or (files[i][6:] == files[j][6:]):
                 continue
             up = 0.0
             down = 1e-10
             for key in musics[i].TFIDF.keys():
-                if musics[i].TF[key] != 0 and musics[j].TF[key] != 0 :
+                if musics[i].TF[key] != 0 and musics[j].TF[key] != 0:
                     up += np.sqrt(IDF[key] * np.sqrt(musics[i].TF[key] * musics[j].TF[key]))
                     down += IDF[key]
             res[files[j]] = up / down
@@ -243,13 +250,14 @@ def TF_IDF_common(n):
         for key, value in res:
             print("{}:\t{}".format(key, value))
             index += 1
-            if key[:6] == files[i][:6]: # ground truth
+            if key[:6] == files[i][:6]:  # ground truth
                 print(index)
                 avg_index += index
                 if (index == 1):
                     accuracy += 1
 
     print("accuracy:{}\taverage index:{}".format(accuracy / file_num, avg_index / file_num))
+
 
 def Tversky_equal(n):
     files = os.listdir(data_path)
@@ -314,6 +322,7 @@ def Tversky_equal(n):
 
     print("accuracy:{}\taverage index:{}".format(accuracy / file_num, avg_index / file_num))
 
+
 def Tversky_weighted(n):
     files = os.listdir(data_path)
     file_num = len(files)
@@ -373,7 +382,7 @@ def Tversky_weighted(n):
                     sum2 += IDF[key]
                 elif musics[i].TF[key] == 0 and musics[j].TF[key] != 0:
                     sum3 += IDF[key]
-            res[files[j]] = sum1 / (sum1 + alpha*sum2 + beta*sum3)
+            res[files[j]] = sum1 / (sum1 + alpha * sum2 + beta * sum3)
 
             # sort in decreasing order
         res = sorted(res.items(), key=lambda d: d[1], reverse=False)
@@ -391,12 +400,14 @@ def Tversky_weighted(n):
 
     print("accuracy:{}\taverage index:{}".format(accuracy / file_num, avg_index / file_num))
 
+
 def main():
-    TF_IDF_common(3)      # accuracy:0.5	average index:2.5
-    TF_IDF_correlation(4) # accuracy:0.6666666666666666	average index:2.111111111111111
-    SumCommon_Wrapper(4)  # accuracy:0.6666666666666666	average index:1.6666666666666667
-    Ukkonen_Wrapper(3)    # accuracy:0.7222222222222222	average index:1.3888888888888888
-    Tversky_equal(4)        # accuracy:0.7222222222222222	average index:2.1666666666666665
-    Tversky_weighted(3)     # accuracy:0.5555555555555556	average index:2.388888888888889
+    # TF_IDF_common(3)      # accuracy:0.5	average index:2.5
+    TF_IDF_correlation(4)  # accuracy:0.6666666666666666	average index:2.111111111111111
+    # SumCommon_Wrapper(4)  # accuracy:0.6666666666666666	average index:1.6666666666666667
+    # Ukkonen_Wrapper(3)    # accuracy:0.7222222222222222	average index:1.3888888888888888
+    # Tversky_equal(4)        # accuracy:0.7222222222222222	average index:2.1666666666666665
+    # Tversky_weighted(3)     # accuracy:0.5555555555555556	average index:2.388888888888889
+
 
 main()

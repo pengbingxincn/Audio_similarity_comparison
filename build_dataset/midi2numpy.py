@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 # path of MIDI folder
-root = os.walk("plag/")
+root = os.walk("midiFordataset/")
 
 
 '''The class to represent note, including four factors:
@@ -38,4 +38,4 @@ for path, dir_list, file_list in root:
             note.length = n.end - n.start
             note.force = n.velocity
             dataset.append(note)
-        np.save("newdata/{}".format(file_name.rstrip('.mid')), dataset)
+        np.save("npydataset/{}".format(file_name.rstrip('.mid')), dataset)
